@@ -10,6 +10,7 @@ process.on('uncaughtException', (err) => {
 if (process.env.NODE_ENV === 'production') {
   console.log('production');
   dotenv.config({ path: './etc/secrets/config.env' });
+  console.log(process.env);
 } else {
   dotenv.config({ path: './config.env' });
 }
