@@ -20,6 +20,10 @@ const messageSchema = new mongoose.Schema(
       address: String,
       description: String,
     },
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
   },
   {
     toJSON: { virtuals: true },

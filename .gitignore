@@ -131,4 +131,5 @@ dist
 
 config.env
 node_modules/
-.vscode/
+
+etc/

@@ -7,7 +7,11 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-dotenv.config({ path: './etc/secrets/config.env' });
+if (process.env.NODE_ENV === 'production') {
+  dotenv.config({ path: './etc/secrets/config.env' });
+} else {
+  dotenv.config({ path: './config.env' });
+}
 
 const app = require('./app');
 

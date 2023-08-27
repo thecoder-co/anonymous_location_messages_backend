@@ -2,6 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Message = require('../models/messageModel');
 const factory = require('./handlerFactory');
+const APIFeatures = require('../utils/apiFeatures');
 
 // /tours-within/:distance/center/:latlng
 // /tours-within/233/center/34.111745,-118.113491
@@ -20,9 +21,54 @@ exports.getMessagesWithin = catchAsync(async (req, res, next) => {
     );
   }
 
-  const messages = await Message.find({
-    location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  const features = new APIFeatures(
+    Message.find({
+      location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+    }),
+    req.query,
+  )
+    .filter()
+    .sort()
+    .paginate();
+
+  const messages = await features.query;
+
+  res.status(200).json({
+    status: 'success',
+    results: messages.length,
+    data: {
+      data: messages,
+    },
   });
+});
+
+// /message-bounds/southwest/:southwest/notheast/:northeast
+exports.getMessagesBounds = catchAsync(async (req, res, next) => {
+  const { southwest, northeast } = req.params;
+
+  const southwestBound = southwest.split(',');
+  const northeastBound = northeast.split(',');
+
+  if (!southwestBound || !northeastBound) {
+    next(
+      new AppError(
+        'Please provide southwest and northeast in the format lat,lng.',
+        400,
+      ),
+    );
+  }
+
+  const features = new APIFeatures(
+    Message.find({
+      location: { $geoWithin: { $box: [southwestBound, northeastBound] } },
+    }),
+    req.query,
+  )
+    .filter()
+    .sort()
+    .paginate();
+
+  const messages = await features.query;
 
   res.status(200).json({
     status: 'success',
