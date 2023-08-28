@@ -13,7 +13,7 @@ const messagesRouter = require('./routes/messageRoutes');
 
 const app = express();
 
-app.options('*', cors());
+app.use(cors());
 
 // 1) GLOBAL MIDDLEWARES
 
