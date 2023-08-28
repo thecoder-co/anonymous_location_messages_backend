@@ -123,7 +123,7 @@ exports.getMessagesBoundsQuery = catchAsync(async (req, res, next) => {
 exports.sendMessage = catchAsync(async (req, res, next) => {
   const { latlng } = req.query;
 
-  const [lat, lng] = latlng.split(',');
+  const [lng, lat] = latlng.split(',');
 
   if (!lat || !lng) {
     next(
