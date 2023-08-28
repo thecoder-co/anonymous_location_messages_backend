@@ -15,9 +15,11 @@ router
 // /messages-within/233/center/-40,45
 
 router
-  .route('/messages-bounds/southwest/:southwest/notheast/:northeast')
+  .route('/messages-bounds/southwest/:southwest/northeast/:northeast')
   .get(messagesController.getMessagesBounds);
 // /messages-bounds/southwest/6.092458466156587,2.626495790625012/notheast/6.804776094833544,4.274445009375012
+
+router.route('/messages-bounds').get(messagesController.getMessagesBoundsQuery);
 
 router.route('/:id').get(messagesController.getMessage);
 

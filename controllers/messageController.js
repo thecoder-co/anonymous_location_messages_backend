@@ -42,25 +42,66 @@ exports.getMessagesWithin = catchAsync(async (req, res, next) => {
   });
 });
 
-// /message-bounds/southwest/:southwest/notheast/:northeast
+// /message-bounds/southwest/:southwest/northeast/:northeast
 exports.getMessagesBounds = catchAsync(async (req, res, next) => {
   const { southwest, northeast } = req.params;
 
-  const southwestBound = southwest.split(',');
-  const northeastBound = northeast.split(',');
+  const southwestBound = southwest.split(',').map((el) => parseFloat(el));
+  const northeastBound = northeast.split(',').map((el) => parseFloat(el));
 
   if (!southwestBound || !northeastBound) {
     next(
       new AppError(
-        'Please provide southwest and northeast in the format lat,lng.',
+        'Please provide southwest and northeast in the format lng,lat.',
         400,
       ),
     );
   }
 
+  const bounds = [southwestBound, northeastBound];
+  console.log(bounds);
   const features = new APIFeatures(
     Message.find({
-      location: { $geoWithin: { $box: [southwestBound, northeastBound] } },
+      location: { $geoWithin: { $box: bounds } },
+    }),
+    req.query,
+  )
+    .filter()
+    .sort()
+    .paginate();
+
+  const messages = await features.query;
+
+  res.status(200).json({
+    status: 'success',
+    results: messages.length,
+    data: {
+      data: messages,
+    },
+  });
+});
+
+// /message-bounds?southwest=34.111745,-118.113491&northeast=34.111745,-118.113491
+exports.getMessagesBoundsQuery = catchAsync(async (req, res, next) => {
+  const { southwest, northeast } = req.query;
+
+  const southwestBound = southwest.split(',').map((el) => parseFloat(el));
+  const northeastBound = northeast.split(',').map((el) => parseFloat(el));
+
+  if (!southwestBound || !northeastBound) {
+    next(
+      new AppError(
+        'Please provide southwest and northeast in the format lng,lat.',
+        400,
+      ),
+    );
+  }
+
+  const bounds = [southwestBound, northeastBound];
+  console.log(bounds);
+  const features = new APIFeatures(
+    Message.find({
+      location: { $geoWithin: { $box: bounds } },
     }),
     req.query,
   )

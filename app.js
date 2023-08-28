@@ -12,6 +12,8 @@ const messagesRouter = require('./routes/messageRoutes');
 
 const app = express();
 
+app.options('*', cors());
+
 // 1) GLOBAL MIDDLEWARES
 
 // Set security HTTP headers
