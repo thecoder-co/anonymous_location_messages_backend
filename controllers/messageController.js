@@ -8,7 +8,7 @@ const APIFeatures = require('../utils/apiFeatures');
 // /tours-within/233/center/34.111745,-118.113491
 exports.getMessagesWithin = catchAsync(async (req, res, next) => {
   const { distance, latlng } = req.params;
-  const [lat, lng] = latlng.split(',');
+  const [lng, lat] = latlng.split(',');
 
   const radius = distance / 6378.1;
 
